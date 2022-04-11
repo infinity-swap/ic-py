@@ -98,6 +98,15 @@ class DIDParserListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by DIDParser#Blob.
+    def enterBlob(self, ctx:DIDParser.BlobContext):
+        pass
+
+    # Exit a parse tree produced by DIDParser#Blob.
+    def exitBlob(self, ctx:DIDParser.BlobContext):
+        pass
+
+
     # Enter a parse tree produced by DIDParser#EmptyRecord.
     def enterEmptyRecord(self, ctx:DIDParser.EmptyRecordContext):
         pass
