@@ -19,6 +19,7 @@ def sign_request(req, iden):
     }
     return req_id, cbor2.dumps(envelop)
 
+
 class Agent:
     def __init__(self, identity, client, nonce_factory=None, ingress_expiry=300, root_key=IC_ROOT_KEY):
         self.identity = identity
@@ -78,9 +79,9 @@ class Agent:
         elif result['status'] == 'rejected':
             return result['reject_message']
 
-    def update_raw(self, canister_id, method_name, *arg, **kwargs):
+    def __update_request(self, canister_id, method_name, arg):
         assert len(arg) == 1 or len(arg) == 2
-        req = {
+        return {
             'request_type': "call",
             'sender': self.identity.sender().bytes,
             'canister_id': Principal.from_str(canister_id).bytes if isinstance(canister_id, str) else canister_id.bytes,
@@ -88,6 +89,9 @@ class Agent:
             'arg': arg[0],
             'ingress_expiry': self.get_expiry_date()
         }
+
+    def update_raw(self, canister_id, method_name, *arg, **kwargs):
+        req = self.__update_request(canister_id, method_name, arg)
         req_id, data = sign_request(req, self.identity)
         _ = self.call_endpoint(canister_id, req_id, data)
         # print('update.req_id:', req_id.hex())
@@ -100,7 +104,17 @@ class Agent:
             else:
                 res = decode(result, arg[1])
             return res
-            
+
+    def update_without_decode(self, canister_id, method_name, *arg, **kwargs):
+        req = self.__update_request(canister_id, method_name, arg)
+        req_id, data = sign_request(req, self.identity)
+        _ = self.call_endpoint(canister_id, req_id, data)
+        # print('update.req_id:', req_id.hex())
+        status, result = self.poll(canister_id, req_id, **kwargs)
+        if status != 'replied':
+            return status
+        else:
+            return result
 
     def read_state_raw(self, canister_id, paths):
         req = {
