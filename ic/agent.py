@@ -45,9 +45,9 @@ class Agent:
         result = self.client.read_state(canister_id, data)
         return result
 
-    def query_raw(self, canister_id, method_name, *arg):
+    def __query_request(self, canister_id, method_name, arg):
         assert len(arg) == 1 or len(arg) == 2
-        req = {
+        return {
             'request_type': "query",
             'sender': self.identity.sender().bytes,
             'canister_id': Principal.from_str(canister_id).bytes if isinstance(canister_id, str) else canister_id.bytes,
@@ -55,6 +55,9 @@ class Agent:
             'arg': arg[0],
             'ingress_expiry': self.get_expiry_date()
         }
+
+    def query_raw(self, canister_id, method_name, *arg):
+        req = self.__query_request(canister_id, method_name, arg)
         _, data = sign_request(req, self.identity)
         result = self.query_endpoint(canister_id, data)
         if result['status'] == 'replied':
@@ -63,6 +66,15 @@ class Agent:
             else:
                 res = decode(result['reply']['arg'], arg[1])
             return res
+        elif result['status'] == 'rejected':
+            return result['reject_message']
+
+    def query_without_decode(self, canister_id, method_name, *arg):
+        req = self.__query_request(canister_id, method_name, arg)
+        _, data = sign_request(req, self.identity)
+        result = self.query_endpoint(canister_id, data)
+        if result['status'] == 'replied':
+            return result['reply']['arg']
         elif result['status'] == 'rejected':
             return result['reject_message']
 
