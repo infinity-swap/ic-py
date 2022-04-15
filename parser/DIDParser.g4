@@ -44,7 +44,9 @@ tuptype:
 	LeftP RightP			# EmptyTuple
 	| LeftP argtypes RightP	# Tuple;
 
-argtypes: datatype (Comma datatype)* Comma?;
+argtypes:
+	datatype (Comma datatype)* Comma?
+	| Name Colon datatype;
 
 funcann: Query # Query | Oneway # Oneway;
 

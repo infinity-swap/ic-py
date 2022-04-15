@@ -77,6 +77,7 @@ def serializedATN():
         buf.write("\u00aa\35\3\2\2\2\u00ab\u00ac\7\22\2\2\u00ac\u00ad\7\30")
         buf.write("\2\2\u00ad\u00ae\5\26\f\2\u00ae\37\3\2\2\2\27#\'\61\67")
         buf.write(";CKO`drvz\u0080\u0086\u008c\u0092\u009a\u00a1\u00a5\u00a9")
+
         return buf.getvalue()
 
 
@@ -1391,6 +1392,12 @@ class DIDParser ( Parser ):
             else:
                 return self.getToken(DIDParser.Comma, i)
 
+        def Name(self):
+            return self.getToken(DIDParser.Name, 0)
+
+        def Colon(self):
+            return self.getToken(DIDParser.Colon, 0)
+
         def getRuleIndex(self):
             return DIDParser.RULE_argtypes
 
@@ -1426,6 +1433,15 @@ class DIDParser ( Parser ):
                 self.state = 161
                 self._errHandler.sync(self)
                 _alt = self._interp.adaptivePredict(self._input,18,self._ctx)
+                while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
+                    if _alt==1:
+                        self.state = 154
+                        self.match(DIDParser.Comma)
+                        self.state = 155
+                        self.datatype() 
+                    self.state = 160
+                    self._errHandler.sync(self)
+                    _alt = self._interp.adaptivePredict(self._input,18,self._ctx)
 
             self.state = 163
             self._errHandler.sync(self)
@@ -1433,7 +1449,6 @@ class DIDParser ( Parser ):
             if _la==DIDParser.Comma:
                 self.state = 162
                 self.match(DIDParser.Comma)
-
 
         except RecognitionException as re:
             localctx.exception = re
