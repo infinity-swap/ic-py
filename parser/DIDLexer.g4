@@ -39,6 +39,8 @@ OPT: 'opt';
 
 VEC: 'vec';
 
+BLOB: 'blob';
+
 RECORD: 'record';
 
 VARIANT: 'variant';

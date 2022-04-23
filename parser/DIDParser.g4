@@ -22,6 +22,7 @@ comptype: constype | reftype;
 constype:
 	OPT datatype																# Option
 	| VEC datatype																# Vector
+	| BLOB      																# Blob
 	| RECORD LeftB RightB														# EmptyRecord
 	| RECORD LeftB recordfield (Semicolon recordfield)* Semicolon? RightB		# Record
 	| VARIANT LeftB RightB														# EmptyVariant
